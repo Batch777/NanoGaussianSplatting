@@ -37,7 +37,10 @@ public class NanoGSEditor : ModuleRules
 				"AssetTools",
 				"EditorFramework",
 				"Projects",
-				"ToolMenus"
+				"ToolMenus",
+				"LevelEditor",
+				"DesktopPlatform",
+				"InputCore"
 			}
 		);
 
