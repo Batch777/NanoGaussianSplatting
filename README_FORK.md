@@ -2,6 +2,25 @@
 
 Changes on top of upstream TimChen1383/NanoGaussianSplatting. Builds & runs on **UE 5.4–5.7**.
 
+## Quick start — Tile & Stream UI (manual walkthrough)
+1. Enable the **NanoGS** plugin in your project and make sure the project uses **DX12 / SM6**
+   (`Config/DefaultEngine.ini`: `DefaultGraphicsRHI=DefaultGraphicsRHI_DX12`,
+   `+D3D12TargetedShaderFormats=PCD3D_SM6`). Build the plugin once.
+2. In the editor: **Tools → "NanoGS Tile & Stream..."**.
+3. **Source PLY**: click `Browse...` and pick your `.ply`.
+4. ☑ **Split into tiles** and set **Tile count** (default **12**; use ~50 for a long/linear
+   scene so individual tiles stay small). Leave ☑ **Build Nanite LOD** and ☑ **Create
+   streaming level** checked.
+5. Click **Generate**. It streams-slices the PLY, imports each tile to `/Game/NanoGSTiles`,
+   builds Nanite, and creates a streaming level at `/Game/Maps/NanoGSStream`. (Big PLYs take
+   a few minutes; a progress dialog shows the stages.)
+6. Open **`/Game/Maps/NanoGSStream`** and fly in: tiles load within `LoadRadius`, unload
+   beyond `UnloadRadius` (VRAM follows the camera). Select the **TileStreamer** actor to tune
+   `Load/Unload Radius`, `Update Every N Frames`, `Async Load`.
+- **No split**: leave the checkbox off → the whole PLY imports as a single asset (+ optional Nanite), no streamer.
+- **Console equivalent**: `nanogs.GenerateTiles <plypath> [tileCount=12] [split=1]`.
+
+
 ## Plugin source changes (`Plugins/NanoGS/`)
 - **fp32 splat positions (stripe/moiré fix).** Positions packed full-float (28-byte stride)
   instead of fp16, fixing world-axis banding at large coordinates.
