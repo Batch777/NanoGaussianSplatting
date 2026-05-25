@@ -30,6 +30,20 @@ TSharedPtr<FGaussianSplatRenderData> UGaussianSplatAsset::GetOrCreateRenderData(
 	return RenderData;
 }
 
+void UGaussianSplatAsset::ReleaseRenderData()
+{
+	if (!RenderData.IsValid())
+	{
+		return;
+	}
+	// Ensure any scene proxy that referenced this data has finished releasing on
+	// the render thread before we drop the last shared-ptr (~FGaussianSplatRenderData
+	// calls ReleaseGPUBuffers()). Caller is responsible for destroying the actor first.
+	FlushRenderingCommands();
+	RenderData.Reset();
+	UE_LOG(LogTemp, Verbose, TEXT("GaussianSplatRenderData: Released shared data for asset '%s'"), *GetName());
+}
+
 void UGaussianSplatAsset::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);

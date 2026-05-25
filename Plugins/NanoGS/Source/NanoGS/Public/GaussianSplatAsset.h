@@ -116,6 +116,12 @@ public:
 	 */
 	TSharedPtr<FGaussianSplatRenderData> GetOrCreateRenderData();
 
+	/** Release shared render data (GPU buffers + packed CPU copy) to free VRAM.
+	 *  Safe once no proxy uses this asset (e.g. tile streamed out);
+	 *  GetOrCreateRenderData() rebuilds it from bulk data on next use. */
+	UFUNCTION(BlueprintCallable, Category = "Gaussian Splatting|Streaming")
+	void ReleaseRenderData();
+
 public:
 	/** Total number of splats */
 	UPROPERTY(VisibleAnywhere, Category = "Info")

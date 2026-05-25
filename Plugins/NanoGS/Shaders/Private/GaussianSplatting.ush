@@ -37,8 +37,8 @@ FUnpackedSplat UnpackSplat(ByteAddressBuffer packedBuffer, uint splatIndex)
 {
 	FUnpackedSplat result;
 
-	// Load 4 uint32 words (16 bytes)
-	uint offset = splatIndex * 16;
+	// 28-byte stride: words 0-3 = color/quat/scale (+ legacy fp16 pos), words 4-6 = fp32 pos
+	uint offset = splatIndex * 28;
 	uint4 packed = packedBuffer.Load4(offset);
 
 	// Decode color (sRGB uint8 → [0,1])
@@ -47,10 +47,9 @@ FUnpackedSplat UnpackSplat(ByteAddressBuffer packedBuffer, uint splatIndex)
 	result.ColorOpacity.b = ((packed.x >> 16) & 0xFF) / 255.0;
 	result.ColorOpacity.a = ((packed.x >> 24) & 0xFF) / 255.0;  // alpha is linear
 
-	// Decode position (float16)
-	result.Position.x = f16tof32(packed.y & 0xFFFF);
-	result.Position.y = f16tof32(packed.y >> 16);
-	result.Position.z = f16tof32(packed.z & 0xFFFF);
+	// Decode position: full fp32 from words 4-6 (byte offset +16). Avoids the fp16
+	// position grid that caused world-aligned banding on large-coordinate scenes.
+	result.Position = asfloat(packedBuffer.Load3(offset + 16));
 
 	// Decode quaternion (octahedral axis-angle → quaternion)
 	uint quatU = (packed.z >> 16) & 0xFF;

@@ -38,9 +38,18 @@ public class NanoGS : ModuleRules
 			new string[]
 			{
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"Json",
+				"JsonUtilities"
 			}
 		);
+
+		// Editor-only: read the active level-editor viewport camera so tile
+		// streaming works while previewing in the editor (not just in PIE).
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.Add("UnrealEd");
+		}
 
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]

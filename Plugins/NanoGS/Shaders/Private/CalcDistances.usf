@@ -35,12 +35,15 @@ void MainCS(uint3 DispatchThreadId : SV_DispatchThreadID)
 		return;
 	}
 
-	// Calculate depth (Z/W for perspective, normalized to [0,1])
-	float depth = clipPos.z / clipPos.w;
+	// Sort key: LINEAR view-space depth (clipPos.w), NOT the non-linear NDC z/w.
+	// NDC reversed-Z concentrates precision near the camera and collapses it at
+	// distance, so far/grazing coplanar splats tie and blend in storage (Morton)
+	// order -> world-aligned banding on the ground. Linear depth gives uniform
+	// precision across the whole range (like PlayCanvas/SuperSplat) -> correct
+	// order on grazing surfaces. Negated so ascending sort = far -> near (back-to-front).
+	float depth = -clipPos.w;
 
-	// Convert to sortable uint for back-to-front sorting
-	// UE uses reversed-Z: near=1, far=0. So ascending sort of depth values
-	// naturally gives back-to-front order (far/small values first, near/large values last).
+	// Convert to sortable uint (ascending sort = farthest first)
 	uint depthBits = asuint(depth);
 
 	// Flip sign bit for proper float-to-sortable-uint conversion

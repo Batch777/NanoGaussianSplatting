@@ -126,6 +126,17 @@ void ProcessSplat(uint splatIndex, uint outputIndex, uint selectedClusterID, uin
 	float3x3 viewMat = (float3x3)WorldToView;
 	float2x2 cov2D = CalcCovariance2D(cov3D_world, viewMat, viewPos.xyz, FocalLength);
 
+	// Anti-aliasing opacity compensation (EWA / Mip-Splatting style, as SparkJS does).
+	// CalcCovariance2D adds a 0.3 low-pass blur to the diagonal. Without compensating
+	// opacity, small/grazing splats (e.g. road at glancing angle) get over-weighted,
+	// producing periodic coverage ripple / world-aligned banding. Conserve energy by
+	// scaling opacity by sqrt(detOriginal / detBlurred) (<= 1).
+	{
+		float detBlur = cov2D[0][0] * cov2D[1][1] - cov2D[0][1] * cov2D[1][0];
+		float detOrig = (cov2D[0][0] - 0.3) * (cov2D[1][1] - 0.3) - cov2D[0][1] * cov2D[1][0];
+		opacity *= saturate(sqrt(max(0.0, detOrig) / max(1e-9, detBlur)));
+	}
+
 	// Decompose to axes
 	float2 axis1, axis2;
 	DecomposeCovariance2D(cov2D, axis1, axis2);

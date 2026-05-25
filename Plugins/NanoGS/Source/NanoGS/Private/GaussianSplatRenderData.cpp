@@ -83,7 +83,7 @@ void FGaussianSplatRenderData::Initialize(UGaussianSplatAsset* Asset)
 			GaussianSplattingUtils::PackSplatToUint4(
 				Position, Rotation, Scale,
 				ColorR, ColorG, ColorB, Opacity,
-				&PackedPtr[i * 4]);
+				&PackedPtr[i * 7]);   // 7 uint32 words/splat (28-byte stride: 4 base + 3 fp32 pos)
 		}
 	}
 

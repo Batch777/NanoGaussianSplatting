@@ -226,8 +226,9 @@ namespace GaussianSplattingConstants
 	constexpr float LN_SCALE_MIN = -8.0f;   // covers ~0.0003 cm
 	constexpr float LN_SCALE_MAX = 14.0f;    // covers ~1.2 million cm
 
-	/** Packed splat stride in bytes (4 x uint32) */
-	constexpr int32 PackedSplatStride = 16;
+	/** Packed splat stride in bytes (7 x uint32): 4 base words + 3 fp32 position words.
+	 *  fp32 positions avoid fp16 quantization banding on large-coordinate scenes. */
+	constexpr int32 PackedSplatStride = 28;
 }
 
 /**
@@ -417,7 +418,7 @@ namespace GaussianSplattingUtils
 		const FQuat4f& Rotation,
 		const FVector3f& Scale,
 		float ColorR, float ColorG, float ColorB, float Opacity,
-		uint32 OutWords[4])
+		uint32 OutWords[7])
 	{
 		// Word 0: R|G|B|A (uint8 each)
 		uint8 R = (uint8)FMath::Clamp(FMath::RoundToInt(ColorR * 255.0f), 0, 255);
@@ -440,5 +441,13 @@ namespace GaussianSplattingUtils
 		uint8 SY = EncodeScaleUint8(Scale.Y);
 		uint8 SZ = EncodeScaleUint8(Scale.Z);
 		OutWords[3] = (uint32)SX | ((uint32)SY << 8) | ((uint32)SZ << 16) | ((uint32)QuatAngle << 24);
+
+		// Words 4-6: full fp32 position. The fp16 in Words 1-2 is left intact (unused by
+		// the shader now) so any other reader still works. fp32 avoids the ~value*2^-10
+		// position grid that fp16 produces on large-coordinate (hundreds of metres) scenes.
+		const uint32* PosBits = reinterpret_cast<const uint32*>(&Position);
+		OutWords[4] = PosBits[0];
+		OutWords[5] = PosBits[1];
+		OutWords[6] = PosBits[2];
 	}
 }
