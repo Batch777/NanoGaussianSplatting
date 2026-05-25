@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GaussianGlobalAccumulator.h"
+#include "NanoGSRHICompat.h"
 #include "GaussianDataTypes.h"
 #include "RHICommandList.h"
 #include "RHIResources.h"
@@ -47,7 +48,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			ViewDataStride,
 			BUF_UnorderedAccess | BUF_ShaderResource | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalViewDataBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalViewDataBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalViewDataBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalViewDataBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -66,7 +67,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortDistanceBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalSortDistanceBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortDistanceBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalSortDistanceBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -81,7 +82,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortDistanceBufferAlt = RHICmdList.CreateBuffer(Desc);
+		GlobalSortDistanceBufferAlt = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortDistanceBufferAltUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalSortDistanceBufferAlt, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -96,7 +97,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_ShaderResource | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortKeysBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalSortKeysBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortKeysBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalSortKeysBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -115,7 +116,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortKeysBufferAlt = RHICmdList.CreateBuffer(Desc);
+		GlobalSortKeysBufferAlt = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortKeysBufferAltUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalSortKeysBufferAlt, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -131,7 +132,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalRadixHistogramBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalRadixHistogramBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalRadixHistogramBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalRadixHistogramBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -146,7 +147,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalRadixDigitOffsetBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalRadixDigitOffsetBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalRadixDigitOffsetBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalRadixDigitOffsetBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -161,7 +162,7 @@ void FGaussianGlobalAccumulator::ResizeIfNeeded(FRHICommandListBase& RHICmdList,
 			UintStride,
 			BUF_UnorderedAccess | BUF_ShaderResource | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortParamsBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalSortParamsBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortParamsBufferSRV = RHICmdList.CreateShaderResourceView(
 			GlobalSortParamsBuffer, FRHIViewDesc::CreateBufferSRV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -198,7 +199,7 @@ void FGaussianGlobalAccumulator::EnsureCompactionBuffersAllocated(FRHICommandLis
 			UintStride,
 			BUF_UnorderedAccess | BUF_ShaderResource | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalVisibleCountArrayBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalVisibleCountArrayBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalVisibleCountArrayBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalVisibleCountArrayBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -217,7 +218,7 @@ void FGaussianGlobalAccumulator::EnsureCompactionBuffersAllocated(FRHICommandLis
 			UintStride,
 			BUF_UnorderedAccess | BUF_ShaderResource | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalBaseOffsetsBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalBaseOffsetsBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalBaseOffsetsBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalBaseOffsetsBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -236,7 +237,7 @@ void FGaussianGlobalAccumulator::EnsureCompactionBuffersAllocated(FRHICommandLis
 			UintStride,
 			BUF_UnorderedAccess | BUF_DrawIndirect | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalCalcDistIndirectArgsBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalCalcDistIndirectArgsBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalCalcDistIndirectArgsBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalCalcDistIndirectArgsBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -251,7 +252,7 @@ void FGaussianGlobalAccumulator::EnsureCompactionBuffersAllocated(FRHICommandLis
 			UintStride,
 			BUF_UnorderedAccess | BUF_DrawIndirect | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalSortIndirectArgsGlobalBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalSortIndirectArgsGlobalBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalSortIndirectArgsGlobalBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalSortIndirectArgsGlobalBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)
@@ -266,7 +267,7 @@ void FGaussianGlobalAccumulator::EnsureCompactionBuffersAllocated(FRHICommandLis
 			UintStride,
 			BUF_UnorderedAccess | BUF_DrawIndirect | BUF_StructuredBuffer)
 			.SetInitialState(ERHIAccess::UAVCompute);
-		GlobalDrawIndirectArgsBuffer = RHICmdList.CreateBuffer(Desc);
+		GlobalDrawIndirectArgsBuffer = GSCreateBuffer(RHICmdList, Desc);
 		GlobalDrawIndirectArgsBufferUAV = RHICmdList.CreateUnorderedAccessView(
 			GlobalDrawIndirectArgsBuffer, FRHIViewDesc::CreateBufferUAV()
 				.SetType(FRHIViewDesc::EBufferType::Structured)

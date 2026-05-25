@@ -7,6 +7,7 @@
 #include "ShaderParameterStruct.h"
 #include "RenderGraphResources.h"
 #include "RenderGraphBuilder.h"
+#include "DataDrivenShaderPlatformInfo.h"  // IsFeatureLevelSupported (explicit include for UE 5.4)
 #include "GaussianDataTypes.h"
 #include "GaussianClusterTypes.h"
 
