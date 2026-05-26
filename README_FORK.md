@@ -1,6 +1,29 @@
 # NanoGS fork — large-PLY tile streaming (+ UE 5.4 support)
 
-Changes on top of upstream TimChen1383/NanoGaussianSplatting. Builds & runs on **UE 5.4–5.7**.
+Changes on top of upstream TimChen1383/NanoGaussianSplatting.
+
+## Supported versions
+- **Unreal Engine 5.4, 5.5, 5.6, 5.7** — Windows 64-bit, **DirectX 12 + Shader Model 6**.
+- Verified building **and rendering** on **5.4** and **5.7**; the same source compiles across
+  5.4–5.7 via a version shim (`NanoGSRHICompat.h`). Other OS / RHIs (Vulkan, Mac, Linux) untested.
+
+## Installation
+**A) From the Release (prebuilt — fastest, no compiler needed if your 5.4 build matches)**
+1. Download `NanoGS-TileStream-UE5.4.zip` from the repo's **Releases**.
+2. Copy the `Plugins/NanoGS` folder into your UE 5.4 project's `Plugins/` (create it if missing).
+3. Set the project to **DX12 + SM6** (see *Hardware*).
+4. Open the project. If the prebuilt binaries don't match your exact 5.4 build, accept the
+   *rebuild* prompt (needs Visual Studio 2022 + the MSVC note in *Hardware*).
+5. If not auto-enabled: **Edit → Plugins**, search **NanoGS**, enable, restart.
+
+**B) From source (any UE 5.4–5.7)**
+1. Copy `Plugins/NanoGS` into your project's `Plugins/`.
+2. Enable it: add `{ "Name": "NanoGS", "Enabled": true }` to your `.uproject` `Plugins` array
+   (or via Edit → Plugins).
+3. Set the project to **DX12 + SM6**.
+4. Build — open the project and let it compile, or:
+   `Build.bat UnrealEditor Win64 Development -Project=<YourProject>.uproject -plugin=<...>/Plugins/NanoGS/NanoGS.uplugin -waitmutex`
+   (use your target engine's `Build.bat`; **not** `RunUAT BuildPlugin`).
 
 ## Quick start — Tile & Stream UI (manual walkthrough)
 1. Enable the **NanoGS** plugin in your project and make sure the project uses **DX12 / SM6**
