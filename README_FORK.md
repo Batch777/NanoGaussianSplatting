@@ -8,8 +8,8 @@ Changes on top of upstream TimChen1383/NanoGaussianSplatting. Builds & runs on *
    `+D3D12TargetedShaderFormats=PCD3D_SM6`). Build the plugin once.
 2. In the editor: **Tools → "NanoGS Tile & Stream..."**.
 3. **Source PLY**: click `Browse...` and pick your `.ply`.
-4. ☑ **Split into tiles** and set **Tile count** (default **12**; use ~50 for a long/linear
-   scene so individual tiles stay small). Leave ☑ **Build Nanite LOD** and ☑ **Create
+4. ☑ **Split into tiles** and set **Tile count** (default **48**; more = smaller tiles =
+   finer streaming + lower per-tile VRAM). Leave ☑ **Build Nanite LOD** and ☑ **Create
    streaming level** checked.
 5. Click **Generate**. It streams-slices the PLY, imports each tile to `/Game/NanoGSTiles`,
    builds Nanite, and creates a streaming level at `/Game/Maps/NanoGSStream`. (Big PLYs take
@@ -18,7 +18,24 @@ Changes on top of upstream TimChen1383/NanoGaussianSplatting. Builds & runs on *
    beyond `UnloadRadius` (VRAM follows the camera). Select the **TileStreamer** actor to tune
    `Load/Unload Radius`, `Update Every N Frames`, `Async Load`.
 - **No split**: leave the checkbox off → the whole PLY imports as a single asset (+ optional Nanite), no streamer.
-- **Console equivalent**: `nanogs.GenerateTiles <plypath> [tileCount=12] [split=1]`.
+- **Console equivalent**: `nanogs.GenerateTiles <plypath> [tileCount=48] [split=1]`.
+
+## Hardware / GPU requirements
+- **GPU**: requires **DX12 + Shader Model 6** (the renderer uses compute passes incl. a
+  9-UAV cluster-culling shader that exceeds the SM5 8-UAV limit). Any **NVIDIA RTX 20-series
+  (Turing) or newer**, AMD RDNA, or Intel Arc works. Developed on RTX 4090; an **RTX 3060
+  12GB (Ampere)** is plenty.
+- **VRAM**: the full ~69M-splat scene is ~9 GB resident if *every* tile is loaded at once.
+  On a **12 GB** card keep the **streamer enabled** so only tiles within `LoadRadius` stay
+  resident (defaults: Load 300 m / Unload 450 m → a few GB). If you still approach the limit,
+  lower `LoadRadius`, raise `Tile count` (smaller tiles), and/or cap working buffers with the
+  `gs.MaxRenderBudget <N>` console var (e.g. `8000000`).
+- **Project settings** must select DX12 + SM6 (step 1 above). Default SM5 will fail to compile
+  the cluster-culling shader.
+- **Building on UE 5.4 with a very new MSVC** (≥ 14.4x): UE 5.4's `ConcurrentLinearAllocator.h`
+  uses unguarded `__has_feature` → C4668/C4067. Install the MSVC **14.38** toolchain, or add
+  `#define __has_feature(x) 0` (non-Clang) near the top of
+  `Engine/Source/Runtime/Core/Public/Windows/WindowsPlatformCompilerSetup.h`. (Not needed on 5.5+.)
 
 
 ## Plugin source changes (`Plugins/NanoGS/`)

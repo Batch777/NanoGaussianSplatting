@@ -48,13 +48,13 @@ public:
 
 	/** Load a tile when the camera is within this distance of its centre (cm). */
 	UPROPERTY(EditAnywhere, Category = "Tile Streaming", meta = (ClampMin = "100.0"))
-	float LoadRadius = 40000.0f;
+	float LoadRadius = 30000.0f;
 
 	/** Unload a tile when the camera is beyond this distance (cm). The effective unload
 	 *  distance is always at least LoadRadius*1.1 (hysteresis), so raising LoadRadius alone
 	 *  still works without tiles thrashing at the boundary. */
 	UPROPERTY(EditAnywhere, Category = "Tile Streaming", meta = (ClampMin = "100.0"))
-	float UnloadRadius = 60000.0f;
+	float UnloadRadius = 45000.0f;
 
 	/** Re-evaluate streaming every N frames (throttle). */
 	UPROPERTY(EditAnywhere, Category = "Tile Streaming", meta = (ClampMin = "1"))

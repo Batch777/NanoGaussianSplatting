@@ -86,7 +86,7 @@ public:
 private:
 	FString PlyPath;
 	bool bSplit = true;
-	int32 TileCount = 12;
+	int32 TileCount = 48;
 	bool bNanite = true;
 	bool bStreamer = true;
 	TSharedPtr<SEditableTextBox> PathBox;

@@ -21,7 +21,7 @@ static void NanoGSGenerateTilesCmd(const TArray<FString>& Args)
 	}
 	FNanoGSTileToolParams P;
 	P.PlyPath = Args[0].TrimQuotes();
-	P.TileCount = Args.Num() > 1 ? FCString::Atoi(*Args[1]) : 12;
+	P.TileCount = Args.Num() > 1 ? FCString::Atoi(*Args[1]) : 48;
 	P.bSplit = Args.Num() > 2 ? (FCString::Atoi(*Args[2]) != 0) : true;
 	FString Msg;
 	const bool bOk = FNanoGSTileTool::Run(P, Msg);

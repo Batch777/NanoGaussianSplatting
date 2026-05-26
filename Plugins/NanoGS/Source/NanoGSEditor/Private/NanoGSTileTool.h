@@ -8,7 +8,7 @@ struct FNanoGSTileToolParams
 {
 	FString PlyPath;                              // source .ply on disk
 	bool    bSplit = true;                        // split into tiles?
-	int32   TileCount = 12;                       // target number of tiles (approx)
+	int32   TileCount = 48;                       // target number of tiles (approx)
 	bool    bBuildNanite = true;                  // build Nanite cluster LOD per asset
 	bool    bSetupStreamer = true;                // create a level with a GaussianTileStreamer
 	FString ContentDir = TEXT("/Game/NanoGSTiles"); // where imported assets land
