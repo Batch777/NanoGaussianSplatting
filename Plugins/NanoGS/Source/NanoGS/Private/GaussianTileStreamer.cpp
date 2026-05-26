@@ -247,7 +247,10 @@ void AGaussianTileStreamer::UpdateStreaming()
 	if (!GetViewLocation(ViewLoc)) return;
 
 	const float LoadR2 = LoadRadius * LoadRadius;
-	const float UnloadR2 = UnloadRadius * UnloadRadius;
+	// Effective unload distance is always >= LoadRadius (with 10% hysteresis) so that
+	// raising LoadRadius alone widens the loaded set instead of thrashing the boundary.
+	const float EffUnload = FMath::Max(UnloadRadius, LoadRadius * 1.1f);
+	const float UnloadR2 = EffUnload * EffUnload;
 
 	// 1) Unload everything out of range (cheap; frees VRAM).
 	for (FGaussianTileEntry& T : Tiles)
